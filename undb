@@ -1,0 +1,148 @@
+# Dados dos usuários e produtos
+usuarios = {
+    'admin': 'admin123'
+}
+
+produtos = {}
+
+# Login
+def login():
+    tentativas = 3
+    while tentativas > 0:
+        usuario = input("Digite seu usuário: ")
+        senha = input("Digite sua senha: ")
+
+        if usuario in usuarios and usuarios[usuario] == senha:
+            print(f"Login efetuado com sucesso, bem-vindo, {usuario}!")
+            return True, usuario
+        else:
+            tentativas -= 1
+            print(f"Usuário ou senha incorretos! Tentativas restantes: {tentativas}")
+    
+    print("Você excedeu o número de tentativas de login.")
+    return False, None
+
+# Cadastro de novos usuários
+def cadastrar_usuario():
+    print("-----CADASTRO DE NOVO USUÁRIO-----")
+    novo_usuario = input("Digite o nome do novo usuário: ")
+    nova_senha = input("Digite a senha: ")
+
+    if novo_usuario in usuarios:
+        print("Usuário já existe")
+    else:
+        usuarios[novo_usuario] = nova_senha
+        print(f"Usuário {novo_usuario} cadastrado com sucesso!")
+
+# Cadastro de produto
+def cadastrar_produto():
+    print("-----CADASTRAR PRODUTO-----")
+    codigo = input("Digite o código do produto: ")
+    nome = input("Digite o nome do produto: ")
+    categoria = input("Digite a categoria do produto: ")
+    quantidade = int(input("Digite a quantidade do produto: "))
+    preco = float(input("Digite o preço do produto (R$): "))
+
+    produtos[codigo] = {
+        'nome': nome,
+        'categoria': categoria,
+        'quantidade': quantidade,
+        'preco': preco
+    }
+    print(f"Produto {nome} cadastrado com sucesso!")
+
+# Editar produtos
+def editar_produto():
+    print("-----EDIÇÃO DE PRODUTO-----")
+    codigo = input("Digite o código do produto que deseja editar: ")
+    if codigo in produtos:
+        nome = input("Digite o novo nome do produto: ")
+        categoria = input("Digite a nova categoria do produto: ")
+        quantidade = int(input("Digite a nova quantidade: "))
+        preco = float(input("Digite o novo preço (R$): "))
+
+        produtos[codigo] = {
+            'nome': nome,
+            'categoria': categoria,
+            'quantidade': quantidade,
+            'preco': preco
+        }
+        print(f"Produto {nome} editado com sucesso!")
+    else:
+        print("Produto não encontrado!")
+
+# Deletar produtos
+def deletar_produto():
+    print("-----DELETAR PRODUTO-----")
+    codigo = input("Digite o código do produto que deseja deletar: ")
+    if codigo in produtos:
+        del produtos[codigo]
+        print(f"Produto de código {codigo} deletado com sucesso!")
+    else:
+        print("Produto não encontrado!")
+
+# Verificar estoque
+def verificar_estoque():
+    print("-----ESTOQUE-----")
+    total_itens = sum([p['quantidade'] for p in produtos.values()])
+    print(f"Total de itens em estoque: {total_itens} (máximo permitido: 500)")
+    
+    for codigo, produto in produtos.items():
+        print(f"{codigo} - {produto['nome']}: {produto['quantidade']} unidades")
+        if produto['quantidade'] < 25:
+            print("  Atenção: Estoque abaixo do mínimo de 25 unidades!")
+        elif produto['quantidade'] > 150:
+            print("  Atenção: Estoque acima do máximo de 150 unidades!")
+
+# Cálculo do valor total do estoque
+def calcular_valor_estoque(usuario_logado):
+    print("-----VALOR TOTAL DO ESTOQUE-----")
+    valor_total = sum([p['quantidade'] * p['preco'] for p in produtos.values()])
+    print(f"Valor total do estoque: R$ {valor_total:.2f}")
+    
+    for codigo, produto in produtos.items():
+        valor_produto = produto['quantidade'] * produto['preco']
+        porcentagem = (valor_produto / valor_total) * 100 if valor_total > 0 else 0
+        print(f"{codigo} - {produto['nome']}: R$ {valor_produto:.2f} ({porcentagem:.2f}% do total)")
+    
+    print(f"Usuário logado: {usuario_logado}")
+
+# Menu de opções
+def main():
+    logado, usuario_logado = login()
+
+    if logado:
+        while True:
+            print("\n-----MENU-----")
+            print("1. Cadastrar Produto")
+            print("2. Editar Produto")
+            print("3. Deletar Produto")
+            print("4. Olhar Estoque")
+            print("5. Ver Estoque Total e Valor")
+            print("6. Cadastrar Novo Usuário")
+            print("7. Sair")
+            opcao = input("Escolha uma opção: ")
+
+            if opcao == '1':
+                cadastrar_produto()
+            elif opcao == '2':
+                editar_produto()
+            elif opcao == '3':
+                deletar_produto()
+            elif opcao == '4':
+                verificar_estoque()
+            elif opcao == '5':
+                calcular_valor_estoque(usuario_logado)
+            elif opcao == '6':
+                cadastrar_usuario()
+            elif opcao == '7':
+                print("Saindo do sistema...")
+                break
+            else:
+                print("Opção inválida, tente novamente.")
+    else:
+        print("Login falhou. Encerrando o programa.")
+
+# Corrigido: __name__ e __main__
+if __name__ == "__main__":
+    main()
